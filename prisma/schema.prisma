@@ -1,0 +1,202 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+model User {
+  id           String         @id @default(uuid())
+  email        String         @unique
+  password     String
+  phoneNumber  String
+  role         String
+  shoppingCart ShoppingCart[]
+  wishlist     Wishlist[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+}
+
+model Category {
+  id         String                   @id @default(uuid())
+  name       String
+  products   Product[]                @relation("CategoryToProduct")
+  variations Variation[]              @relation("CategoryToVariation")
+  createdAt  DateTime                 @default(now())
+  updatedAt  DateTime                 @updatedAt
+  Categories CategoriesOnCollection[]
+}
+
+model Collection {
+  id          String                   @id @default(uuid())
+  name        String
+  Collections CategoriesOnCollection[]
+  createdAt   DateTime                 @default(now())
+  updatedAt   DateTime                 @updatedAt
+}
+
+model Promotion {
+  id           String        @id @default(uuid())
+  name         String
+  description  String
+  discountRate Decimal
+  ProductItem  ProductItem[] @relation("PromotionToProductItem")
+  startDate    DateTime
+  endDate      DateTime
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model CategoriesOnCollection {
+  id           Int         @id @default(autoincrement())
+  categoryId   String?
+  Category     Category?   @relation(fields: [categoryId], references: [id])
+  Collection   Collection? @relation(fields: [collectionId], references: [id])
+  collectionId String?
+
+  @@index([categoryId])
+  @@index([collectionId])
+}
+
+model Product {
+  id          String        @id @default(uuid())
+  categoryId  String
+  productItem ProductItem[]
+  category    Category      @relation("CategoryToProduct", fields: [categoryId], references: [id])
+  name        String
+  imageURL    String
+  description String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([categoryId])
+}
+
+model Variation {
+  id         String              @id @default(uuid())
+  categoryId String
+  category   Category            @relation("CategoryToVariation", fields: [categoryId], references: [id])
+  options    OptionOfVariation[] @relation("VariationToOption")
+  name       String
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
+
+  @@index([categoryId])
+}
+
+model OptionOfVariation {
+  id            String                 @id @default(uuid())
+  Variation     Variation              @relation("VariationToOption", fields: [variationId], references: [id])
+  variationId   String
+  configuration ProductConfiguration[]
+  value         String
+  createdAt     DateTime               @default(now())
+  updatedAt     DateTime               @updatedAt
+
+  @@index([variationId])
+}
+
+model Image {
+  id            String      @id @default(uuid())
+  productItemId String
+  productItem   ProductItem @relation(fields: [productItemId], references: [id], onDelete: Cascade)
+  url           String
+  createdAt     DateTime    @default(now())
+  updateAt      DateTime    @updatedAt
+
+  @@index([productItemId])
+}
+
+model ProductItem {
+  id                   String                 @id @default(uuid())
+  name                 String
+  Product              Product                @relation(fields: [productId], references: [id])
+  productId            String
+  productConfiguration ProductConfiguration[]
+  SKU                  String                 @unique
+  qty_in_stoke         Decimal
+  images               Image[]
+  cartItem             ShoppingCartItem[]
+  wishlistItem         WishlistItem[]
+  price                Decimal
+  Promotion            Promotion              @relation("PromotionToProductItem", fields: [promotionId], references: [id])
+  promotionId          String                 @default("")
+  isFeatured           Boolean                @default(false)
+  isArchived           Boolean                @default(false)
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+
+  @@index([productId])
+  @@index([promotionId])
+}
+
+model ProductConfiguration {
+  id                String            @id @default(uuid())
+  ProductItem       ProductItem       @relation(fields: [productItemId], references: [id])
+  productItemId     String
+  OptionOfVariation OptionOfVariation @relation(fields: [optionId], references: [id])
+  optionId          String
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  @@index([productItemId])
+  @@index([optionId])
+}
+
+model ShoppingCart {
+  id        String             @id @default(uuid())
+  User      User               @relation(fields: [userId], references: [id])
+  userId    String
+  cartItem  ShoppingCartItem[]
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  @@index([userId])
+}
+
+model ShoppingCartItem {
+  id            String       @id @default(uuid())
+  ShoppingCart  ShoppingCart @relation(fields: [cartId], references: [id])
+  cartId        String
+  ProductItem   ProductItem  @relation(fields: [productItemId], references: [id])
+  productItemId String
+  qty_in_cart   Decimal
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([productItemId])
+  @@index([cartId])
+}
+
+model Wishlist {
+  id           String         @id @default(uuid())
+  User         User           @relation(fields: [userId], references: [id])
+  userId       String
+  wishlistItem WishlistItem[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@index([userId])
+}
+
+model WishlistItem {
+  id            String      @id @default(uuid())
+  Wishlist      Wishlist    @relation(fields: [wistlistId], references: [id])
+  wistlistId    String
+  ProductItem   ProductItem @relation(fields: [productItemId], references: [id])
+  productItemId String
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([productItemId])
+  @@index([wistlistId])
+}
