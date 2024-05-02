@@ -62,3 +62,24 @@ export const DELETE = async (
     return new NextResponse("Internal error", { status: 500 });
   }
 };
+
+export const GET = async (
+  req: Request,
+  { params }: { params: { promotionId: string } }
+) => {
+  try {
+    if (!params.promotionId) {
+      return new NextResponse("Promotion id is required", { status: 401 });
+    }
+    const promotion = await prismadb.promotion.findUnique({
+      where: {
+        id: params.promotionId,
+      },
+    });
+    return NextResponse.json(promotion);
+  } catch (error) {
+    console.log(error);
+    console.log("[PROMOTION_GET]", error);
+    return new NextResponse("Internal Error", { status: 500 });
+  }
+};

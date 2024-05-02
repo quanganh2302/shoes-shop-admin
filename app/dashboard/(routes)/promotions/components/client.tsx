@@ -7,6 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { PromotionColumn, columns } from "./columns";
+import { ApiList } from "@/components/ui/api-list";
 
 interface PromotionClientProps {
   data: PromotionColumn[];
@@ -28,6 +29,8 @@ export const PromotionClient: React.FC<PromotionClientProps> = ({ data }) => {
       </div>
       <Separator />
       <DataTable searchKey="name" data={data} columns={columns} />
+      <Separator />
+      <ApiList entityName="promotions" entityIdName="promotionId" />
     </>
   );
 };

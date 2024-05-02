@@ -33,7 +33,7 @@ const CellAction: React.FC<CellActionProps> = ({ data }) => {
     } catch (error) {
       console.log(error);
       toast.error(
-        "Make sure you removed all products using this category first."
+        "Make sure you removed all products using this Product item first."
       );
     } finally {
       setLoading(false);

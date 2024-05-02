@@ -12,9 +12,9 @@ export function MainNav({
   const pathname = usePathname();
   const routes = [
     {
-      href: `/dashboard/settings`,
-      label: "Settings",
-      active: pathname === `/dashboard/settings`,
+      href: `/dashboard/roles`,
+      label: "Roles",
+      active: pathname === `/dashboard/roles`,
     },
     {
       href: `/dashboard/users`,
@@ -22,14 +22,30 @@ export function MainNav({
       active: pathname === `/dashboard/users`,
     },
     {
+      href: `/dashboard/genders`,
+      label: "Genders",
+      active: pathname === `/dashboard/genders`,
+    },
+    {
       href: `/dashboard/categories`,
       label: "Categories",
       active: pathname === `/dashboard/categories`,
     },
+
     {
-      href: `/dashboard/collections`,
-      label: "Collections",
-      active: pathname === `/dashboard/collections`,
+      href: `/dashboard/colors`,
+      label: "Color",
+      active: pathname === `/dashboard/colors`,
+    },
+    {
+      href: `/dashboard/brands`,
+      label: "Brand",
+      active: pathname === `/dashboard/brands`,
+    },
+    {
+      href: `/dashboard/styles`,
+      label: "Style",
+      active: pathname === `/dashboard/styles`,
     },
     {
       href: `/dashboard/products`,
@@ -42,24 +58,24 @@ export function MainNav({
       active: pathname === `/dashboard/product-items`,
     },
     {
-      href: `/dashboard/variations`,
-      label: "Variations",
-      active: pathname === `/dashboard/variations`,
-    },
-    {
-      href: `/dashboard/options`,
-      label: "Options",
-      active: pathname === `/dashboard/options`,
-    },
-    {
-      href: `/dashboard/product-configurations`,
-      label: "Product-configurations",
-      active: pathname === `/dashboard/product-configurations`,
+      href: `/dashboard/sizes`,
+      label: "Size",
+      active: pathname === `/dashboard/sizes`,
     },
     {
       href: `/dashboard/promotions`,
       label: "Promotions",
       active: pathname === `/dashboard/promotions`,
+    },
+    {
+      href: `/dashboard/collections`,
+      label: "Collections",
+      active: pathname === `/dashboard/collections`,
+    },
+    {
+      href: `/dashboard/products-collections`,
+      label: "Product-Collection",
+      active: pathname === `/dashboard/products-collections`,
     },
   ];
 

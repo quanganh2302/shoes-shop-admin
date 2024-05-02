@@ -4,19 +4,16 @@ import { NextResponse } from "next/server";
 export const POST = async (req: Request) => {
   try {
     const body = await req.json();
-    const { email, password, phoneNumber, role } = body;
+    const { email, password, phoneNumber, roleKey, userName } = body;
 
     if (!email) {
-      return new NextResponse("Email is required", { status: 400 });
+      return new NextResponse("Email is required", { status: 401 });
     }
     if (!password) {
-      return new NextResponse("Password is required", { status: 400 });
+      return new NextResponse("Password is required", { status: 401 });
     }
-    if (!phoneNumber) {
-      return new NextResponse("Phone number is required", { status: 400 });
-    }
-    if (!role) {
-      return new NextResponse("Role is required", { status: 400 });
+    if (!roleKey) {
+      return new NextResponse("Role is required", { status: 401 });
     }
 
     const user = await prismadb.user.create({
@@ -24,7 +21,8 @@ export const POST = async (req: Request) => {
         email,
         password,
         phoneNumber,
-        role,
+        userName,
+        roleKey,
       },
     });
     return NextResponse.json(user);

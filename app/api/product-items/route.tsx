@@ -4,65 +4,58 @@ import { NextResponse } from "next/server";
 export const POST = async (req: Request) => {
   try {
     const body = await req.json();
-    const {
-      name,
-      productId,
-      SKU,
-      qty_in_stoke,
-      price,
-      images,
-      promotionId,
-      isFeatured,
-      isArchived,
-    } = body;
-    if (!name) {
-      return new NextResponse("Product item name is required", { status: 401 });
-    }
+    const { productId, sizeValue, qty_in_stoke } = body;
+
     if (!productId) {
-      return new NextResponse("Product id is required", { status: 401 });
+      return new NextResponse("product Id is required", { status: 400 });
     }
-    if (!SKU) {
-      return new NextResponse("SKU is required", { status: 401 });
+    if (!sizeValue) {
+      return new NextResponse("Size Id is required", { status: 400 });
     }
     if (!qty_in_stoke) {
-      return new NextResponse("Quantity is required", { status: 401 });
+      return new NextResponse("Quantity is required", { status: 400 });
     }
-    if (!price) {
-      return new NextResponse("Price is required", { status: 401 });
-    }
-    if (!images || !images.length) {
-      return new NextResponse("imageURL is required", { status: 401 });
-    }
+
     const productItem = await prismadb.productItem.create({
       data: {
-        name,
         productId,
-        promotionId,
-        isFeatured,
-        isArchived,
-        SKU,
+        sizeValue,
         qty_in_stoke,
-        price,
-        images: {
-          createMany: {
-            data: [...images.map((image: { url: string }) => image)],
-          },
-        },
+      },
+    });
+    // Update quantity of Product Item
+
+    const totalQuantity = await prismadb.productItem.aggregate({
+      _sum: {
+        qty_in_stoke: true,
+      },
+      where: {
+        productId,
+      },
+    });
+
+    await prismadb.product.update({
+      where: {
+        id: productId,
+      },
+      data: {
+        qty_in_stoke: totalQuantity._sum.qty_in_stoke || 0,
       },
     });
     return NextResponse.json(productItem);
   } catch (error) {
-    console.log("PRODUCT_ITEM_POST", error);
-    return new NextResponse("Internal error", { status: 500 });
+    console.log("[PRODUCT_ITEM_POST]", error);
+    return new NextResponse("Internal Error", { status: 500 });
   }
 };
 
 export const GET = async (req: Request) => {
   try {
-    const productItems = await prismadb.productItem.findMany();
-    return NextResponse.json(productItems);
+    const productItem = await prismadb.productItem.findMany();
+    return NextResponse.json(productItem);
   } catch (error) {
-    console.log("PRODUCT_ITEM_GET", error);
-    return new NextResponse("Internal error", { status: 500 });
+    console.log(error);
+    console.log("[PRODUCT_ITEM_GET]", error);
+    return new NextResponse("Internal Error", { status: 500 });
   }
 };

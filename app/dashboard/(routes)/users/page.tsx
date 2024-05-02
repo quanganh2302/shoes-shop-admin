@@ -13,11 +13,10 @@ const UsersPage = async () => {
     return null;
   }
 
-
   const formattedUsers: UserColumn[] = users.map((item) => ({
     id: item.id,
     email: item.email,
-    role: item.role,
+    roleKey: item.roleKey,
     createdAt: format(item.createdAt, "MMMM do, yyyy"),
   }));
 

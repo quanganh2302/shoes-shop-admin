@@ -4,13 +4,17 @@ import { NextResponse } from "next/server";
 export const POST = async (req: Request) => {
   try {
     const body = await req.json();
-    const { name } = body;
+    const { name, genderName } = body;
     if (!name) {
       return new NextResponse("Category name is required", { status: 401 });
     }
+    if (!genderName) {
+      return new NextResponse("Gender name is required", { status: 401 });
+    }
     const category = await prismadb.category.create({
       data: {
-        name,
+        name: name.toLowerCase(),
+        genderName: genderName.toLowerCase(),
       },
     });
     return NextResponse.json(category);

@@ -7,6 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { CollectionColumn, columns } from "./columns";
+import { ApiList } from "@/components/ui/api-list";
 
 interface CollectionClientProps {
   data: CollectionColumn[];
@@ -28,6 +29,9 @@ export const CollectionClient: React.FC<CollectionClientProps> = ({ data }) => {
       </div>
       <Separator />
       <DataTable searchKey="name" data={data} columns={columns} />
+
+      <Separator />
+      <ApiList entityName="collections" entityIdName="collectionId" />
     </>
   );
 };

@@ -7,9 +7,12 @@ export const PATCH = async (
 ) => {
   try {
     const body = await req.json();
-    const { name } = body;
+    const { name, genderName } = body;
     if (!name) {
       return new NextResponse("Category name is required", { status: 401 });
+    }
+    if (!genderName) {
+      return new NextResponse("Gender name is required", { status: 401 });
     }
     if (!params.categoryId) {
       return new NextResponse("Category id is required", { status: 401 });
@@ -19,7 +22,8 @@ export const PATCH = async (
         id: params.categoryId,
       },
       data: {
-        name,
+        name: name.toLowerCase(),
+        genderName: genderName.toLowerCase(),
       },
     });
     return NextResponse.json(category);
@@ -43,6 +47,21 @@ export const DELETE = async (
     return NextResponse.json(category);
   } catch (error) {
     console.log("DELETE_CATEGORY", error);
+    return new NextResponse("Internal error", { status: 500 });
+  }
+};
+
+export const GET = async (
+  req: Request,
+  { params }: { params: { categoryId: string } }
+) => {
+  try {
+    const category = await prismadb.category.findUnique({
+      where: { id: params.categoryId },
+    });
+    return NextResponse.json(category);
+  } catch (error) {
+    console.log(error);
     return new NextResponse("Internal error", { status: 500 });
   }
 };

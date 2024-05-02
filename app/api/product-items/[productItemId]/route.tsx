@@ -7,61 +7,51 @@ export const PATCH = async (
 ) => {
   try {
     const body = await req.json();
-    const {
-      name,
-      productId,
-      SKU,
-      qty_in_stoke,
-      price,
-      images,
-      promotionId,
-      isFeatured,
-      isArchived,
-    } = body;
-    if (!name) {
-      return new NextResponse("Product item name is required", { status: 401 });
-    }
+    const { productId, sizeValue, qty_in_stoke } = body;
+
     if (!productId) {
-      return new NextResponse("Product id is required", { status: 401 });
+      return new NextResponse("Product Item Id is required", { status: 400 });
     }
-    if (!SKU) {
-      return new NextResponse("SKU is required", { status: 401 });
+    if (!sizeValue) {
+      return new NextResponse("Size value is required", { status: 400 });
     }
     if (!qty_in_stoke) {
-      return new NextResponse("Quantity is required", { status: 401 });
+      return new NextResponse("Quantity is required", { status: 400 });
     }
-    if (!price) {
-      return new NextResponse("Price is required", { status: 401 });
-    }
-    if (!images || !images.length) {
-      return new NextResponse("imageURL is required", { status: 401 });
-    }
-    if (!params.productItemId) {
-      return new NextResponse("Category id is required", { status: 401 });
-    }
-    const productItem = await prismadb.productItem.update({
+    const productItem = await prismadb.productItem.updateMany({
       where: {
         id: params.productItemId,
       },
       data: {
-        name,
         productId,
-        promotionId,
-        isFeatured,
-        isArchived,
-        SKU,
+        sizeValue,
         qty_in_stoke,
-        price,
-        images: {
-          createMany: {
-            data: [...images.map((image: { url: string }) => image)],
-          },
-        },
       },
     });
+
+    // Update quantity of Product Item
+
+    const totalQuantity = await prismadb.productItem.aggregate({
+      _sum: {
+        qty_in_stoke: true,
+      },
+      where: {
+        productId,
+      },
+    });
+
+    await prismadb.product.update({
+      where: {
+        id: productId,
+      },
+      data: {
+        qty_in_stoke: totalQuantity._sum.qty_in_stoke || 0,
+      },
+    });
+
     return NextResponse.json(productItem);
   } catch (error) {
-    console.log("PRODUCT_ITEM_PATCH", error);
+    console.log("[PRODUCT_ITEM_PATCH]", error);
     return new NextResponse("Internal error", { status: 500 });
   }
 };
@@ -72,11 +62,54 @@ export const DELETE = async (
 ) => {
   try {
     if (!params.productItemId) {
-      return new NextResponse("Product Item id is required", { status: 401 });
+      return new NextResponse("Product id is required", { status: 400 });
     }
+
+    const productItemBefore = await prismadb.productItem.findUnique({
+      where: {
+        id: params.productItemId,
+      },
+    });
+
     const productItem = await prismadb.productItem.delete({
       where: { id: params.productItemId },
     });
+
+    const productItemAfter = await prismadb.productItem.findMany({
+      where: {
+        productId: productItemBefore?.productId,
+      },
+    });
+
+    if (productItemAfter) {
+      const totalQuantity = await prismadb.productItem.aggregate({
+        _sum: {
+          qty_in_stoke: true,
+        },
+        where: {
+          productId: productItemBefore?.productId,
+        },
+      });
+
+      await prismadb.product.update({
+        where: {
+          id: productItemBefore?.productId,
+        },
+        data: {
+          qty_in_stoke: totalQuantity._sum.qty_in_stoke || 0,
+        },
+      });
+    } else {
+      await prismadb.product.update({
+        where: {
+          id: productItemBefore?.productId,
+        },
+        data: {
+          qty_in_stoke: 0,
+        },
+      });
+    }
+
     return NextResponse.json(productItem);
   } catch (error) {
     console.log("PRODUCT_ITEM_DELETE", error);

@@ -7,6 +7,7 @@ import { Plus } from "lucide-react";
 import { UserColumn, columns } from "./columns";
 import { DataTable } from "@/components/ui/data-table";
 import { useRouter } from "next/navigation";
+import { ApiList } from "@/components/ui/api-list";
 
 interface UserClientProps {
   data: UserColumn[];
@@ -25,6 +26,8 @@ export const UserClient: React.FC<UserClientProps> = ({ data }) => {
       </div>
       <Separator className="my-4" />
       <DataTable searchKey="email" columns={columns} data={data} />
+      <Separator />
+      <ApiList entityName="users" entityIdName="userEmail" />
     </>
   );
 };

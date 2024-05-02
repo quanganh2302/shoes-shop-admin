@@ -29,12 +29,10 @@ const CellAction: React.FC<CellActionProps> = ({ data }) => {
       await axios.delete(`/api/product-items/${data.id}`);
       router.push(`/dashboard/product-items`);
       router.refresh();
-      toast.success("Product Item deleted.");
+      toast.success("ProductItem deleted.");
     } catch (error) {
       console.log(error);
-      toast.error(
-        "Make sure you removed all products using this Product item first."
-      );
+      toast.error("Something went wrong");
     } finally {
       setLoading(false);
       setOpen(false);

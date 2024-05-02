@@ -8,24 +8,33 @@ import CellAction from "./cell-action";
 export type ProductColumn = {
   id: string;
   name: string;
-  imageURL: string;
+  qty_in_stoke: string | null;
+  price: string;
+  isFeatured: boolean;
+  isArchived: boolean;
   createdAt: string;
 };
 
 export const columns: ColumnDef<ProductColumn>[] = [
   {
     accessorKey: "name",
-    header: "Product name",
+    header: "Product Item Name",
   },
   {
-    accessorKey: "imageURL",
-    header: "Image",
-    cell: ({ row }) => (
-      <div
-        className="w-10 h-10 bg-center bg-cover bg-no-repeat"
-        style={{ backgroundImage: `url(${row.original.imageURL})` }}
-      ></div>
-    ),
+    accessorKey: "qty_in_stoke",
+    header: "Quantity",
+  },
+  {
+    accessorKey: "price",
+    header: "Price",
+  },
+  {
+    accessorKey: "isArchived",
+    header: "Archived",
+  },
+  {
+    accessorKey: "isFeatured",
+    header: "Featured",
   },
   {
     accessorKey: "createdAt",

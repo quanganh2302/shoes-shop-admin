@@ -7,7 +7,7 @@ export async function GET(
 ) {
   try {
     if (!params.email) {
-      return new NextResponse("Billboard id is required", { status: 400 });
+      return new NextResponse("Email is required", { status: 401 });
     }
 
     const user = await prismadb.user.findMany({
@@ -28,23 +28,25 @@ export const PATCH = async (
 ) => {
   try {
     const body = await req.json();
-    const { phoneNumber, password } = body;
+    const { phoneNumber, password, userName, roleKey } = body;
     if (!phoneNumber) {
-      return new NextResponse("Phone Number is required", { status: 400 });
+      return new NextResponse("Phone Number is required", { status: 401 });
     }
-    if (!password) {
-      return new NextResponse("Password is required", { status: 400 });
+    if (!roleKey) {
+      return new NextResponse("Role Id is required", { status: 401 });
     }
     if (!params.email) {
-      return new NextResponse("BillboardId is required", { status: 400 });
+      return new NextResponse("Email is required", { status: 401 });
     }
     const updateUser = await prismadb.user.updateMany({
       where: {
         email: params.email,
       },
       data: {
-        phoneNumber,
         password,
+        phoneNumber,
+        userName,
+        roleKey,
       },
     });
     return NextResponse.json(updateUser);
@@ -62,20 +64,26 @@ export async function DELETE(
     if (!params.email) {
       return new NextResponse("Email is required", { status: 400 });
     }
-    const userByEmail = await prismadb.user.findFirst({
-      where: {
-        email: params.email,
-      },
-    });
+    // const userByEmail = await prismadb.user.findFirst({
+    //   where: {
+    //     email: params.email,
+    //   },
+    // });
 
-    if (!userByEmail) {
-      return new NextResponse("Unauthorized", { status: 403 });
-    }
-    const user = await prismadb.user.deleteMany({
-      where: {
-        email: params.email,
-      },
-    });
+    // if (!userByEmail) {
+    //   return new NextResponse("Unauthorized", { status: 403 });
+    // }
+    // const user = await prismadb.user.deleteMany({
+    //   where: {
+    //     email: params.email,
+    //   },
+    // });
+
+    const user = await prismadb.user.delete({
+      where  :{ 
+        email : params.email
+      }
+    })
     return NextResponse.json(user);
   } catch (error) {
     console.log("[USER_DELETE]", error);

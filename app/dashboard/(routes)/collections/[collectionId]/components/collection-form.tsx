@@ -40,12 +40,14 @@ const formSchema = z.object({
 
 type CollectionFormValues = z.infer<typeof formSchema>;
 
-const CollectionForm: React.FC<CollectionFormProps> = ({
-  initialData,
-}) => {
+const CollectionForm: React.FC<CollectionFormProps> = ({ initialData }) => {
   const title = initialData ? "Edit Collection" : "Create Collection";
-  const description = initialData ? "Edit a Collection" : "Add a new Collection";
-  const toastMessage = initialData ? "Collection updated" : "Collection created";
+  const description = initialData
+    ? "Edit a Collection"
+    : "Add a new Collection";
+  const toastMessage = initialData
+    ? "Collection updated"
+    : "Collection created";
   const action = initialData ? "Save change" : "Create Collection";
   const params = useParams();
   const router = useRouter();

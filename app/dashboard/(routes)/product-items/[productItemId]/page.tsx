@@ -9,19 +9,16 @@ const ProductItemPage = async ({
     where: {
       id: params.productItemId,
     },
-    include: {
-      images: true,
-    },
   });
-  const promotions = await prismadb.promotion.findMany();
   const products = await prismadb.product.findMany();
+  const sizes = await prismadb.size.findMany();
   return (
     <div className="flex-col">
       <div className="flex-1 space-x-4 p-8">
         <ProductItemForm
-          products={products}
-          promotions={promotions}
+          sizes={sizes}
           initialData={productItem}
+          products={products}
         />
       </div>
     </div>

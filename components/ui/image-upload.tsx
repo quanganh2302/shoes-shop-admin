@@ -22,15 +22,14 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   useEffect(() => {
     setIsMounted(true);
   }, []);
-  
+
+
   const onUpload = (result: any) => {
     onChange(result.info.secure_url);
   };
   if (!isMounted) {
     return null;
   }
-
-
   return (
     <div>
       <div className="mb-4 flex items-center gap-4">
@@ -54,7 +53,11 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         ))}
       </div>
 
-      <CldUploadWidget onSuccess={onUpload} uploadPreset="a0o0tdoq">
+      <CldUploadWidget
+        options={{ multiple: true }}
+        onSuccess={onUpload}
+        uploadPreset="a0o0tdoq"
+      >
         {({ open }) => {
           const onClick = () => {
             open();
@@ -67,8 +70,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
               onClick={onClick}
             >
               <ImagePlus className="h-4 w-4 mr-2" />
-           
-            Upload an image
+              Upload an image
             </Button>
           );
         }}

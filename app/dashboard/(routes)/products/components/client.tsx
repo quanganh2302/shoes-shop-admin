@@ -7,6 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { Plus } from "lucide-react";
 import {  useRouter } from "next/navigation";
 import { ProductColumn, columns } from "./columns";
+import { ApiList } from "@/components/ui/api-list";
 
 interface ProductClientProps {
   data: ProductColumn[];
@@ -18,8 +19,8 @@ export const ProductClient: React.FC<ProductClientProps> = ({ data }) => {
     <>
       <div className="flex items-center justify-between">
         <Heading
-          title={`Products (${data.length})`}
-          description="Manage products for your store"
+          title={`Product (${data.length})`}
+          description="Manage product for your store"
         />
         <Button onClick={() => router.push(`/dashboard/products/new`)}>
           <Plus className="mr-2 h-4 w-4" />
@@ -28,6 +29,8 @@ export const ProductClient: React.FC<ProductClientProps> = ({ data }) => {
       </div>
       <Separator />
       <DataTable searchKey="name" data={data} columns={columns} />
+      <Separator />
+      <ApiList entityName="products" entityIdName="productId" />
     </>
   );
 };

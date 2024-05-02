@@ -25,16 +25,16 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const params = useParams();
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
-  const onCopy = (id: string) => {
-    navigator.clipboard.writeText(id);
+  const onCopy = (email: string) => {
+    navigator.clipboard.writeText(email);
     toast.success("User id copied to the clipboard");
   };
   const onDelete = async () => {
     try {
       setLoading(true);
-      await axios.delete(`/api/users/${data.id}`);
+      await axios.delete(`/api/users/${data.email}`);
+      router.push(`/dashboard/users`);
       router.refresh();
-      router.push(`/dashboard/users/${data.id}`);
       toast.success("User deleted.");
     } catch (error) {
       toast.error("Something went wrong");
@@ -61,12 +61,12 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          <DropdownMenuItem onClick={() => onCopy(data.id)}>
+          <DropdownMenuItem onClick={() => onCopy(data.email)}>
             <Copy className="mr-2 h-4 w-4" />
             Copy id
           </DropdownMenuItem>
           <DropdownMenuItem
-            onClick={() => router.push(`/dashboard/users/${data.id}`)}
+            onClick={() => router.push(`/dashboard/users/${data.email}`)}
           >
             <Edit className="mr-2 h-4 w-4" />
             Update

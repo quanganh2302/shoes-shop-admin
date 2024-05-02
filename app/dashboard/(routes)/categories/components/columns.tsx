@@ -8,6 +8,7 @@ import CellAction from "./cell-action";
 export type CategoryColumn = {
   id: string;
   name: string;
+  genderName: string;
   createdAt: string;
 };
 
@@ -15,6 +16,10 @@ export const columns: ColumnDef<CategoryColumn>[] = [
   {
     accessorKey: "name",
     header: "Category",
+  },
+  {
+    accessorKey: "genderName",
+    header: "Gender",
   },
   {
     accessorKey: "createdAt",

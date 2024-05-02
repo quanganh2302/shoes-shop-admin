@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 
 import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
-import { Category } from "@prisma/client";
+import { Category, Gender } from "@prisma/client";
 import { Trash } from "lucide-react";
 import { AlertModal } from "@/components/modals/alert-modal";
 import * as z from "zod";
@@ -19,6 +19,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import toast from "react-hot-toast";
 import axios from "axios";
@@ -26,17 +33,22 @@ import { useParams, useRouter } from "next/navigation";
 
 interface CategoryFormProps {
   initialData: Category | null;
+  genders: Gender[];
 }
 
 const formSchema = z.object({
   name: z.string().min(1),
+  genderName: z.string().min(1),
 });
 
 type CategoryFormValues = z.infer<typeof formSchema>;
 
-const CategoryForm: React.FC<CategoryFormProps> = ({ initialData }) => {
+const CategoryForm: React.FC<CategoryFormProps> = ({
+  initialData,
+  genders,
+}) => {
   const title = initialData ? "Edit Category" : "Create Category";
-  const description = initialData ? "Edit a category" : "Add a new category";
+  const description = initialData ? "Edit a Category" : "Add a new Category";
   const toastMessage = initialData ? "Category updated" : "Category created";
   const action = initialData ? "Save change" : "Create category";
   const params = useParams();
@@ -45,6 +57,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ initialData }) => {
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
       name: "",
+      genderName: "",
     },
   });
   const [open, setOpen] = useState(false);
@@ -128,6 +141,42 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ initialData }) => {
                       {...field}
                     />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="genderName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Gender</FormLabel>
+                  <Select
+                    disabled={loading}
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue
+                          defaultValue={field.value}
+                          placeholder="Select a Gender"
+                        />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="capitalize">
+                      {genders.map((gender) => (
+                        <SelectItem
+                          key={gender.id}
+                          value={gender.name}
+                          className="capitalize"
+                        >
+                          {gender.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
